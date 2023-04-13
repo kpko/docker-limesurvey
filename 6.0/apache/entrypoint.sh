@@ -74,6 +74,11 @@ else
         DB_CHARSET=${DB_CHARSET:-'utf8'}
     fi
 
+    if [ "$DB_TYPE" = 'sqlsrv' ]; then
+        echo 'Info: Using Microsoft SQL Server configuration'
+        DB_CHARSET=${DB_CHARSET:-'utf8'}
+    fi
+
     if [ -n "$DB_SOCK" ]; then
         echo 'Info: Using unix socket'
         DB_CONNECT='unix_socket'
