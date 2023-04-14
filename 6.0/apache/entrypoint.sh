@@ -74,9 +74,10 @@ else
         DB_CHARSET=${DB_CHARSET:-'utf8'}
     fi
 
-    if [ "$DB_TYPE" = 'sqlsrv' ]; then
-        echo 'Info: Using Microsoft SQL Server configuration'
+    if [ "$DB_TYPE" = 'sqlsrv' ] || [ "$DB_TYPE" = 'dblib' ]; then
+        echo 'Info: Using Microsoft SQL Server configuration ($DB_TYPE)'
         DB_CHARSET=${DB_CHARSET:-'utf8'}
+        DB_INITSQLS=${DB_INITSQLS:-"array('SET DATEFORMAT ymd;', 'SET QUOTED_IDENTIFIER ON;')"}
     fi
 
     if [ -n "$DB_SOCK" ]; then
@@ -102,6 +103,7 @@ return array(
       'password' => '$DB_PASSWORD',
       'charset' => '$DB_CHARSET',
       'tablePrefix' => '${DB_TABLE_PREFIX//[[:space:]]/}',
+      'initSQLs' => ${DB_INITSQLS:-"array()"},
     ),
     //'session' => array (
     //   'class' => 'application.core.web.DbHttpSession',

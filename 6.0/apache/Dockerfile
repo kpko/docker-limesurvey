@@ -19,6 +19,8 @@ RUN set -ex; \
         libzip-dev \
         libtidy-dev \
         libsodium-dev \
+        freetds-dev \
+        freetds-bin \
         netcat \
         curl \
         unixodbc-dev \
@@ -44,6 +46,7 @@ RUN set -ex; \
         pdo_mysql \
         pdo_pgsql \
         pgsql \
+        pdo_dblib \
         sodium \
         tidy \
         zip
