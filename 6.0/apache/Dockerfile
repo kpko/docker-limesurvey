@@ -50,6 +50,38 @@ RUN set -ex; \
         tidy \
         zip
 
+# # sqlsrv packages
+# RUN set -ex; \
+#         apt-get update && apt-get install -y gnupg && \
+#         curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+#         curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+#         apt-get update && \
+#         ACCEPT_EULA=Y apt-get install -y libltdl-dev libltdl7 msodbcsql18 unixodbc-dev
+
+# # sqlsrv extensions
+# RUN set -ex; \
+#         pecl install sqlsrv && \
+#         pecl install pdo_sqlsrv && \
+#         mkdir -p /etc/php.d/ && \
+#         printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php.d/sqlsrv.ini && \
+#         printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php.d/pdo_sqlsrv.ini && \
+#         phpenmod sqlsrv pdo_sqlsrv
+# install and setup custom extensions
+RUN apt-get -qq -y update \
+  && apt-get --no-install-recommends -qq -y install apt-transport-https gnupg \
+  # mssql odbc driver
+  && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+  && curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+  && apt-get -qq -y update \
+  && ACCEPT_EULA=Y apt-get install -y msodbcsql17 odbcinst=2.3.7 odbcinst1debian2=2.3.7 unixodbc-dev=2.3.7 unixodbc=2.3.7 \
+  # install and enable extensions
+  && pecl install pdo_sqlsrv-5.10.1 \
+  && docker-php-ext-enable pdo_sqlsrv \
+  && pecl install sqlsrv-5.10.1 \
+  && docker-php-ext-enable sqlsrv \
+  && ACCEPT_EULA=Y apt-get install -y mssql-tools \
+  && echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+
 # Apache configuration
 RUN a2enmod headers rewrite remoteip; \
         {\

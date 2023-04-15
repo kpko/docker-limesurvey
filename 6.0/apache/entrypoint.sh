@@ -74,10 +74,15 @@ else
         DB_CHARSET=${DB_CHARSET:-'utf8'}
     fi
 
-    if [ "$DB_TYPE" = 'dblib' ]; then
+    if [ "$DB_TYPE" = 'sqlsrv' ] || [ "$DB_TYPE" = 'dblib' ]; then
         echo 'Info: Using Microsoft SQL Server configuration'
         DB_CHARSET=${DB_CHARSET:-'utf8'}
         DB_INITSQLS=${DB_INITSQLS:-"array('SET DATEFORMAT ymd;', 'SET QUOTED_IDENTIFIER ON;')"}
+
+        # sqlsrv uses another connection string format than dblib/postgres/mysql
+        if [ "$DB_TYPE" = 'sqlsrv' ]; then
+          DB_CONNECTIONSTRING=${DB_CONNECTIONSTRING:-"sqlsrv:Server=$DB_HOST,$DB_PORT;Database=$DB_NAME"}
+        fi
     fi
 
     if [ -n "$DB_SOCK" ]; then
@@ -97,7 +102,7 @@ else
 return array(
   'components' => array(
     'db' => array(
-      'connectionString' => '$DB_TYPE:$DB_CONNECT=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;',
+      'connectionString' => '${DB_CONNECTIONSTRING:-"$DB_TYPE:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;"}',
       'emulatePrepare' => true,
       'username' => '$DB_USERNAME',
       'password' => '$DB_PASSWORD',

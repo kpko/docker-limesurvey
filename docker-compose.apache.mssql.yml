@@ -7,8 +7,8 @@ services:
     depends_on:
       - lime-db
     environment:
-      - "DB_HOST=lime-db"
-      - "DB_TYPE=dblib"
+      - "DB_HOST=172.21.0.2"
+      - "DB_TYPE=sqlsrv"
       - "DB_PORT=1433"
       - "DB_USERNAME=sa"
       - "DB_PASSWORD=yourStrong(!)Password"
