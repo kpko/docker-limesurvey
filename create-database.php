@@ -35,10 +35,16 @@ function populateDatabase($oDB)
         if (Yii::app()->getConfig('mysqlEngine') == 'INNODB') {
             $options .= ' ROW_FORMAT=DYNAMIC'; // Same than create-database
         }
-    }
-
+  }
+    /* try { */
+  echo 'before trans';
+    var_dump($oDB->getPdoInstance()->inTransaction());
+    $oDB->getPdoInstance()->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     /* $oTransaction = $oDB->beginTransaction(); */
-    try {
+    $oDB->getPdoInstance()->beginTransaction(); 
+    var_dump($oDB->getPdoInstance()->inTransaction());
+  echo 'after trans';
+    /* var_dump($oTransaction->getConnection()->getPdoInstance()->inTransaction()); */
         //answers table
         $oDB->createCommand()->createTable('{{answers}}', array(
             'aid' =>  "pk",
@@ -49,6 +55,7 @@ function populateDatabase($oDB)
             'scale_id' => 'integer NOT NULL DEFAULT 0',
         ), $options);
 
+      /* var_dump($oTransaction->getConnection()->getPdoInstance()->inTransaction()); */
         $oDB->createCommand()->createIndex('{{answers_idx}}', '{{answers}}', ['qid', 'code', 'scale_id'], true);
         $oDB->createCommand()->createIndex('{{answers_idx2}}', '{{answers}}', 'sortorder', false);
 
@@ -1154,11 +1161,13 @@ function populateDatabase($oDB)
             ['id', 'language']
         );
 
-        // Install default plugins.
+    // Install default plugins.
+    echo 'installing plugins...';
         foreach (LsDefaultDataSets::getDefaultPluginsData() as $plugin) {
             unset($plugin['id']);
             $oDB->createCommand()->insert("{{plugins}}", $plugin);
         }
+    echo 'installed plugins...';
 
         $oDB->createCommand()->createTable(
             '{{failed_emails}}',
@@ -1177,18 +1186,27 @@ function populateDatabase($oDB)
             ]
         );
 
+        echo 'set vers\n';
         // Set database version
         $oDB->createCommand()->insert("{{settings_global}}", ['stg_name' => 'DBVersion' , 'stg_value' => $databaseCurrentVersion]);
-    } catch (Exception $e) {
-        /* $oTransaction->rollback(); */
-        echo 'err rollback' . $e;
-        throw new CHttpException(500, $e->getMessage());
-    }
-    /* // Some database (like MySQl) do not support table creation in transaction and will auto-commit */
-    /* // Any error in the transaction commit should not be propagated */
-    /* try { */
-    /*     $oTransaction->commit(); */
+        var_dump($oDB->getPdoInstance()->inTransaction());
   /* } catch (Exception $e) { */
-    /*   echo 'err commit' . $e; */
-    /* }; */
+        /* echo 'err rollback ' . $e; */
+        /* $oTransaction->rollback(); */
+        /* throw new CHttpException(500, $e->getMessage()); */
+  /* } */
+    echo 'done\n';
+    // Some database (like MySQl) do not support table creation in transaction and will auto-commit
+    // Any error in the transaction commit should not be propagated
+    try {
+    echo 'try commit  ';
+    /* echo 'active (' . $oTransaction->getActive() . ')  '; */
+    /* echo 'conn active (' . $oTransaction->getConnection()->getActive() . ')  '; */
+    /* echo 'in trans (' . $oTransaction->getConnection()->getPdoInstance()->inTransaction() . ')  '; */
+    var_dump($oDB->getPdoInstance()->inTransaction());
+    /* $oDB->getPdoInstance()->commit(); */
+    echo 'commit success\n';
+    } catch (Exception $e) {
+    echo 'commit err\n' . $e;
+    };
 }

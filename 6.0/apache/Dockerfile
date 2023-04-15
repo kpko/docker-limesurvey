@@ -23,7 +23,6 @@ RUN set -ex; \
         freetds-bin \
         netcat \
         curl \
-        unixodbc-dev \
         \
         && apt-get -y autoclean; apt-get -y autoremove; \
         rm -rf /var/lib/apt/lists/*
@@ -50,14 +49,6 @@ RUN set -ex; \
         sodium \
         tidy \
         zip
-
-# sqlsrv extensions
-RUN set -ex; \
-        pecl install sqlsrv pdo_sqlsrv && \
-        {\
-        echo "extension=pdo_sqlsrv.so" ;\
-        echo "extension=sqlsrv.so" ;\
-        } > /etc/php.d/sqlsrv.ini;
 
 # Apache configuration
 RUN a2enmod headers rewrite remoteip; \

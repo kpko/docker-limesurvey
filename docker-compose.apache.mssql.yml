@@ -13,10 +13,16 @@ services:
       - "DB_USERNAME=sa"
       - "DB_PASSWORD=yourStrong(!)Password"
       - "ADMIN_PASSWORD=foobar"
-      - "PUBLIC_URL=http://192.168.32.3:8080/"  # Example, Change this
-      - "BASE_URL=http://192.168.32.3:8080/"  # Example, Change this
+      - "PUBLIC_URL=http://172.24.107.237:8080/"  # Example, Change this
+      - "BASE_URL=http://172.24.107.237:8080/"  # Example, Change this
+      - "DEBUG=1"
+      - "DEBUG_SQL=1"
+    ports:
+      - '8080:8080'
   lime-db:
     image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+      - '1433:1433'
     environment:
       - "ACCEPT_EULA=Y"
       - "MSSQL_SA_PASSWORD=yourStrong(!)Password"

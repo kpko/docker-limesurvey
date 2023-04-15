@@ -74,8 +74,8 @@ else
         DB_CHARSET=${DB_CHARSET:-'utf8'}
     fi
 
-    if [ "$DB_TYPE" = 'sqlsrv' ] || [ "$DB_TYPE" = 'dblib' ]; then
-        echo 'Info: Using Microsoft SQL Server configuration ($DB_TYPE)'
+    if [ "$DB_TYPE" = 'dblib' ]; then
+        echo 'Info: Using Microsoft SQL Server configuration'
         DB_CHARSET=${DB_CHARSET:-'utf8'}
         DB_INITSQLS=${DB_INITSQLS:-"array('SET DATEFORMAT ymd;', 'SET QUOTED_IDENTIFIER ON;')"}
     fi
@@ -173,7 +173,7 @@ if [ $PHP_UPDATEDB_EXIT_CODE -eq 0 ]; then
 else
     echo ''
     echo 'Running console.php install'
-    php application/commands/console.php install "$ADMIN_USER" "$ADMIN_PASSWORD" "$ADMIN_NAME" "$ADMIN_EMAIL"
+    php application/commands/console.php install "$ADMIN_USER" "$ADMIN_PASSWORD" "$ADMIN_NAME" "$ADMIN_EMAIL" verbose
 fi
 
 exec "$@"
